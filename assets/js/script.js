@@ -225,8 +225,67 @@ var saveTasks = function () {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
+var loadTasks = function() {
+ // get tasks from localeStorage
+ var savedTasks = localStorage.getItem("tasks");
+
+ if (!savedTasks){
+    savedTasks = [];
+     return false;
+ };
+ 
+ // convert savedTasks from string to array
+ savedTasks = JSON.parse(savedTasks);
+
+ console.log(savedTasks);
+
+
+ for (var i = 0; i < savedTasks.length; i++) {
+    savedTasks[i].id = taskIdCounter
+
+    var listItemEl = document.createElement("li");
+  listItemEl.className = "task-item";
+
+  // add task id as a custom attribute
+  listItemEl.setAttribute("data-task-id", savedTasks[i].id);
+
+  // create div to hold task info and add to list item
+  var taskInfoEl = document.createElement("div");
+  taskInfoEl.className = "task-info";
+  taskInfoEl.innerHTML =
+    "<h3 class='task-name'>" +
+    savedTasks[i].name +
+    "</h3><span class='task-type'>" +
+    savedTasks[i].type +
+    "</span>";
+  listItemEl.appendChild(taskInfoEl);
+
+  var taskActionsEl = createTaskActions(savedTasks[i].id);
+  listItemEl.appendChild(taskActionsEl);
+
+     if (savedTasks[i].status === "to do") {
+         listItemEl.querySelector("select[name='status-change']").selectedIndex = 0
+         tasksToDoEl.appendChild(listItemEl);
+     } else if (savedTasks[i].status === "in progress") {
+         listItemEl.querySelector("select[name='status-change']").selectedIndex = 1
+         tasksInProgessEl.appendChild(listItemEl);
+     } else if (savedTasks[i].status === "completed") {
+         listItemEl.querySelector("select[name='status-change']").selectedIndex = 2
+         tasksCompletedEl.appendChild(listItemEl);
+     }
+
+     taskIdCounter++
+
+     console.log(listItemEl)
+ }
+ 
+ // iterate through tasks array and creates task elements on page  
+};
+
 formEl.addEventListener("submit", taskFormHandler);
 
 pageContentEl.addEventListener("click", taskButtonHandler);
 
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
+
+loadTasks();
